@@ -61,18 +61,21 @@ const CreateUser = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          role: formData.role,
-          subject: formData.subjects[0],
-          classInfo: formData.classInfo,
-        }),
-      });
+      const response = await fetch(
+        "https://saasion-backend.onrender.com/api/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            role: formData.role,
+            subject: formData.subjects[0],
+            classInfo: formData.classInfo,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

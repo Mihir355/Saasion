@@ -28,7 +28,9 @@ const EditUser = () => {
     const query = new URLSearchParams(queryObj).toString();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users?${query}`);
+      const res = await fetch(
+        `https://saasion-backend.onrender.com/api/users?${query}`
+      );
       const data = await res.json();
       setUsers(data);
     } catch (err) {
@@ -79,7 +81,7 @@ const EditUser = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${selectedUser._id}`,
+        `https://saasion-backend.onrender.com/api/users/${selectedUser._id}`,
         {
           method: "PUT",
           headers: {

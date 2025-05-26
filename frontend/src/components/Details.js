@@ -26,7 +26,9 @@ const Details = () => {
     const query = new URLSearchParams(queryObj).toString();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users?${query}`);
+      const res = await fetch(
+        `https://saasion-backend.onrender.com/api/users?${query}`
+      );
       if (!res.ok) throw new Error("Failed to fetch teachers");
       const data = await res.json();
       setTeachers(data);

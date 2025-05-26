@@ -25,10 +25,10 @@ const AssignStudent = () => {
       if (filters.subject) params.append("subject", filters.subject);
 
       const studentRes = await fetch(
-        `http://localhost:5000/api/users?role=student&${params.toString()}`
+        `https://saasion-backend.onrender.com/api/users?role=student&${params.toString()}`
       );
       const teacherRes = await fetch(
-        `http://localhost:5000/api/users?role=teacher&${params.toString()}`
+        `https://saasion-backend.onrender.com/api/users?role=teacher&${params.toString()}`
       );
 
       const studentData = await studentRes.json();
@@ -52,16 +52,19 @@ const AssignStudent = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/assign", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentId: selectedStudentId,
-          teacherId: selectedTeacherId,
-        }),
-      });
+      const res = await fetch(
+        "https://saasion-backend.onrender.com/api/users/assign",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            studentId: selectedStudentId,
+            teacherId: selectedTeacherId,
+          }),
+        }
+      );
 
       const data = await res.json();
 
