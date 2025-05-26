@@ -1,0 +1,102 @@
+.createuser-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.createuser-title {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.createuser-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.createuser-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.createuser-label {
+  font-size: 0.95rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.createuser-input,
+.createuser-select {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.createuser-input:focus,
+.createuser-select:focus {
+  outline: none;
+  border-color: #90cdf4;
+  box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.3);
+}
+
+.createuser-submit-button {
+  padding: 1rem 1.5rem;
+  background-color: #2968c8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 1rem;
+}
+
+.createuser-submit-button:hover {
+  background-color: #1f4e9c;
+  transform: translateY(-1px);
+}
+
+.createuser-goback-button {
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background-color: #f7fafc;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.createuser-goback-button:hover {
+  background-color: #edf2f7;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .createuser-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .createuser-title {
+    font-size: 1.75rem;
+  }
+  
+  .createuser-input,
+  .createuser-select {
+    padding: 0.7rem 0.9rem;
+  }
+}

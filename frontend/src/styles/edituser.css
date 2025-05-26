@@ -1,0 +1,197 @@
+.edituser-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.edituser-title {
+  font-size: 2rem;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.edituser-filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.edituser-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edituser-filter-label {
+  font-size: 0.95rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.edituser-filter-select,
+.edituser-filter-input {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.edituser-filter-select:focus,
+.edituser-filter-input:focus {
+  outline: none;
+  border-color: #90cdf4;
+  box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.3);
+}
+
+.edituser-subtitle {
+  font-size: 1.25rem;
+  color: #2c3e50;
+  margin: 1.5rem 0 1rem;
+}
+
+.edituser-user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edituser-user-item {
+  display: flex;
+}
+
+.edituser-user-button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.edituser-user-button:hover {
+  background: #edf2f7;
+  transform: translateY(-1px);
+}
+
+.edituser-edit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.edituser-editing-title {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.edituser-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edituser-label {
+  font-size: 0.95rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.edituser-input,
+.edituser-select {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.edituser-input:focus,
+.edituser-select:focus {
+  outline: none;
+  border-color: #90cdf4;
+  box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.3);
+}
+
+.edituser-action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.edituser-save-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #2968c8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edituser-save-button:hover {
+  background-color: #1f4e9c;
+  transform: translateY(-1px);
+}
+
+.edituser-cancel-button {
+  padding: 0.8rem 1.5rem;
+  background: #f7fafc;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edituser-cancel-button:hover {
+  background: #edf2f7;
+  transform: translateY(-1px);
+}
+
+.edituser-goback-button {
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: #f7fafc;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edituser-goback-button:hover {
+  background: #edf2f7;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .edituser-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .edituser-title {
+    font-size: 1.75rem;
+  }
+  
+  .edituser-filter-select,
+  .edituser-filter-input {
+    padding: 0.7rem 0.9rem;
+  }
+}

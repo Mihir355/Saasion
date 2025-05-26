@@ -1,0 +1,73 @@
+.homepage-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.homepage-title {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+.homepage-button-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.homepage-create-button,
+.homepage-edit-button,
+.homepage-details-button,
+.homepage-assign-button {
+  padding: 1.2rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.homepage-create-button {
+  background-color: #e8f4ff;
+  color: #2968c8;
+}
+
+.homepage-edit-button {
+  background-color: #f5f3ff;
+  color: #5b4dbe;
+}
+
+.homepage-details-button {
+  background-color: #fff4e6;
+  color: #d67b0f;
+}
+
+.homepage-assign-button {
+  background-color: #e6f9ff;
+  color: #0f8d9d;
+}
+
+.homepage-create-button:hover,
+.homepage-edit-button:hover,
+.homepage-details-button:hover,
+.homepage-assign-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 600px) {
+  .homepage-button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .homepage-title {
+    font-size: 2rem;
+  }
+}
