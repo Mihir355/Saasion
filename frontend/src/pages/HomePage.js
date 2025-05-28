@@ -32,6 +32,12 @@ const HomePage = () => {
         >
           Assign
         </button>
+        <button
+          className="homepage-tables-button"
+          onClick={() => navigate("/tables")}
+        >
+          Assign
+        </button>
       </div>
     </div>
   );

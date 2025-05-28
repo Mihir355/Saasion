@@ -22,7 +22,8 @@
 .homepage-create-button,
 .homepage-edit-button,
 .homepage-details-button,
-.homepage-assign-button {
+.homepage-assign-button,
+.homepage-tables-button {
   padding: 1.2rem 2rem;
   border: none;
   border-radius: 8px;
@@ -53,11 +54,16 @@
   background-color: #e6f9ff;
   color: #0f8d9d;
 }
+.homepage-tables-button{
+  background-color: #ffb3d9;
+  color: #823953;
+}
 
 .homepage-create-button:hover,
 .homepage-edit-button:hover,
 .homepage-details-button:hover,
-.homepage-assign-button:hover {
+.homepage-assign-button:hover,
+.homepage-tables-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
