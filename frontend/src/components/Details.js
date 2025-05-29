@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/details.css";
+
 const SUBJECT_OPTIONS = ["english", "math", "science", "hindi"];
 
 const Details = () => {
@@ -19,11 +20,11 @@ const Details = () => {
     setLoading(true);
     setError(null);
 
-    const queryObj = { role: "teacher" };
-    if (filters.classInfo.trim()) queryObj.classInfo = filters.classInfo.trim();
-    if (filters.subject.trim()) queryObj.subject = filters.subject.trim();
-
-    const query = new URLSearchParams(queryObj).toString();
+    const query = new URLSearchParams({
+      role: "teacher",
+      ...(filters.classInfo.trim() && { classInfo: filters.classInfo.trim() }),
+      ...(filters.subject.trim() && { subject: filters.subject.trim() }),
+    }).toString();
 
     try {
       const res = await fetch(
@@ -103,18 +104,24 @@ const Details = () => {
             teachers.map((teacher) => (
               <div key={teacher._id} className="details-teacher-card">
                 <h3 className="details-teacher-name">{teacher.name}</h3>
+
                 <div className="details-teacher-info">
+                  <h4>Teaching Assignments:</h4>
+                  <ul className="details-assignments-list">
+                    {teacher.teachingAssignments.map((assignment, index) => (
+                      <li key={index} className="details-assignment-item">
+                        <span>Class:</span> {assignment.classInfo} |{" "}
+                        <span>Subject:</span> {assignment.subject}
+                      </li>
+                    ))}
+                  </ul>
+
                   <p>
-                    <span>Class:</span> {teacher.classInfo}
-                  </p>
-                  <p>
-                    <span>Subject:</span> {teacher.subject}
-                  </p>
-                  <p>
-                    <span>Assigned Students:</span>{" "}
+                    <span>Total Assigned Students:</span>{" "}
                     {teacher.assignedStudentsCount || 0}
                   </p>
                 </div>
+
                 {teacher.assignedStudentsCount > 0 && (
                   <div className="details-students-section">
                     <h4 className="details-students-heading">Students:</h4>

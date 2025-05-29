@@ -51,17 +51,44 @@ router.get("/", async (req, res) => {
 
     const filter = {};
 
-    if (role) filter.role = role;
+    if (role && role.trim() !== "") filter.role = role.trim();
 
-    if (role === "teacher" && (subject || classInfo)) {
-      filter.teachingAssignments = {};
-      if (subject) filter["teachingAssignments.subject"] = subject;
-      if (classInfo) filter["teachingAssignments.classInfo"] = classInfo;
+    // For teachers - filter by teaching assignments
+    if (role === "teacher") {
+      if (classInfo && classInfo.trim() !== "") {
+        filter["teachingAssignments.classInfo"] = classInfo.trim();
+      }
+      if (subject && subject.trim() !== "") {
+        filter["teachingAssignments.subject"] = subject.trim();
+      }
+    }
+    // For students - filter by their class and subject
+    else {
+      if (classInfo && classInfo.trim() !== "") {
+        filter.classInfo = classInfo.trim();
+      }
+      if (subject && subject.trim() !== "") {
+        filter.subject = subject.trim();
+      }
     }
 
-    if (role !== "teacher") {
-      if (classInfo) filter.classInfo = classInfo;
-      if (subject) filter.subject = subject;
+    if (filter.role === "teacher") {
+      const teachers = await User.find(filter).populate({
+        path: "assignedStudents",
+        select: "name classInfo subject",
+      });
+
+      const result = teachers.map((teacher) => {
+        // Calculate total assigned students
+        const assignedStudentsCount = teacher.assignedStudents.length;
+
+        return {
+          ...teacher.toObject(),
+          assignedStudentsCount,
+        };
+      });
+
+      return res.json(result);
     }
 
     const users = await User.find(filter);
