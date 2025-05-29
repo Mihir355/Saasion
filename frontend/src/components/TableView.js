@@ -34,7 +34,7 @@ const TableView = () => {
 
         // Ensure we always get an array
         const responseData = Array.isArray(response.data) ? response.data : [];
-        console.log(responseData);
+        console.log(response.data);
         setData(responseData);
       } catch (error) {
         console.error("Error fetching data:", error);
