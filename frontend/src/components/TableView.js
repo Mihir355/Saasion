@@ -88,13 +88,8 @@ const TableView = () => {
   };
 
   const renderTable = () => {
-    if (loading) {
-      return <div className="loading">Loading data...</div>;
-    }
-
-    if (error) {
-      return <div className="error">{error}</div>;
-    }
+    if (loading) return <div className="loading">Loading data...</div>;
+    if (error) return <div className="error">{error}</div>;
 
     if (selectedType === "teacher") {
       return (
@@ -123,7 +118,8 @@ const TableView = () => {
                   <td>
                     {teacher.assignedStudents?.map((student) => (
                       <div key={student._id} className="student-item">
-                        {student.name} <br />
+                        {student.name}
+                        <br />
                         <small>
                           (Class: {student.classInfo}, Subject:{" "}
                           {student.subject})
@@ -131,9 +127,17 @@ const TableView = () => {
                       </div>
                     )) || "None"}
                   </td>
-                  <td>
-                    <button onClick={() => handleEdit(teacher)}>Edit</button>
-                    <button onClick={() => handleDelete(teacher._id)}>
+                  <td className="action-cell">
+                    <button
+                      className="table-action-button edit-action-button"
+                      onClick={() => handleEdit(teacher)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="table-action-button delete-action-button"
+                      onClick={() => handleDelete(teacher._id)}
+                    >
                       Delete
                     </button>
                   </td>
@@ -171,9 +175,17 @@ const TableView = () => {
                   <td>{student.subject}</td>
                   <td>{student.classInfo}</td>
                   <td>{student.assignedTeacher?.name || "Not Assigned"}</td>
-                  <td>
-                    <button onClick={() => handleEdit(student)}>Edit</button>
-                    <button onClick={() => handleDelete(student._id)}>
+                  <td className="action-cell">
+                    <button
+                      className="table-action-button edit-action-button"
+                      onClick={() => handleEdit(student)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="table-action-button delete-action-button"
+                      onClick={() => handleDelete(student._id)}
+                    >
                       Delete
                     </button>
                   </td>

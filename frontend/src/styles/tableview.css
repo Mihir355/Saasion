@@ -1,3 +1,4 @@
+/* tableview.css */
 .table-view-container {
   max-width: 1200px;
   margin: 2rem auto;
@@ -110,27 +111,39 @@ th {
   font-style: italic;
 }
 
-/* Buttons */
-button {
-  margin-right: 0.5rem;
+/* Action buttons */
+.action-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table-action-button {
   padding: 0.4rem 0.75rem;
   border: none;
   border-radius: 5px;
-  background-color: #3182ce;
-  color: #fff;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s ease-in-out;
+  transition: opacity 0.2s ease;
+  font-size: 0.85rem;
 }
 
-button:hover {
-  background-color: #2b6cb0;
+.table-action-button:hover {
+  opacity: 0.9;
 }
 
-button:last-child {
+.edit-action-button {
+  background-color: #3182ce;
+  color: #fff;
+}
+
+.delete-action-button {
   background-color: #e53e3e;
+  color: #fff;
 }
 
-button:last-child:hover {
-  background-color: #c53030;
+/* Subject view buttons */
+.subject-group-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
