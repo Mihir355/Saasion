@@ -48,12 +48,10 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { role, classInfo, subject } = req.query;
-
     const filter = {};
 
     if (role && role.trim() !== "") filter.role = role.trim();
 
-    // For teachers - filter by teaching assignments
     if (role === "teacher") {
       if (classInfo && classInfo.trim() !== "") {
         filter["teachingAssignments.classInfo"] = classInfo.trim();
@@ -67,15 +65,9 @@ router.get("/", async (req, res) => {
         select: "name classInfo subject",
       });
 
-      const result = teachers.map((teacher) => ({
-        ...teacher.toObject(),
-        assignedStudentsCount: teacher.assignedStudents.length,
-      }));
-
-      return res.json(result);
-    }
-    // For students - filter by their class and subject
-    else if (role === "student") {
+      // Return raw teacher objects without extra mapping
+      return res.json(teachers);
+    } else if (role === "student") {
       if (classInfo && classInfo.trim() !== "") {
         filter.classInfo = classInfo.trim();
       }
@@ -91,7 +83,6 @@ router.get("/", async (req, res) => {
       return res.json(students);
     }
 
-    // Handle other roles or no role specified
     const users = await User.find(filter);
     res.json(users);
   } catch (err) {
