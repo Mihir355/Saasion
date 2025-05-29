@@ -1,3 +1,4 @@
+/* edituser.css */
 .edituser-container {
   max-width: 800px;
   margin: 2rem auto;
@@ -54,15 +55,26 @@
   font-size: 1.25rem;
   color: #2c3e50;
   margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.edituser-no-results {
+  text-align: center;
+  color: #718096;
+  font-style: italic;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
 }
 
 .edituser-user-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.8rem;
 }
 
 .edituser-user-item {
@@ -71,7 +83,7 @@
 
 .edituser-user-button {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.8rem 1rem;
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 6px;
@@ -79,11 +91,21 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
 }
 
 .edituser-user-button:hover {
   background: #edf2f7;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.edituser-user-button::before {
+  content: "→";
+  margin-right: 0.5rem;
+  color: #a0aec0;
 }
 
 .edituser-edit-section {
@@ -91,12 +113,18 @@
   flex-direction: column;
   gap: 1.5rem;
   margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .edituser-editing-title {
   font-size: 1.5rem;
   color: #2c3e50;
   margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .edituser-form-group {
@@ -127,10 +155,67 @@
   box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.3);
 }
 
+.edituser-assignments {
+  margin-top: 1.5rem;
+}
+
+.edituser-assignments-title {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.edituser-assignment-group {
+  position: relative;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.edituser-remove-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edituser-remove-button:hover {
+  background: #fed7d7;
+}
+
+.edituser-add-button {
+  padding: 0.7rem 1rem;
+  background: #edf2f7;
+  color: #2c3e50;
+  border: 1px dashed #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.edituser-add-button:hover {
+  background: #e2e8f0;
+}
+
 .edituser-action-buttons {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
 }
 
 .edituser-save-button {
@@ -141,11 +226,14 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
+  flex: 1;
 }
 
 .edituser-save-button:hover {
   background-color: #1f4e9c;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .edituser-cancel-button {
@@ -156,11 +244,14 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
+  flex: 1;
 }
 
 .edituser-cancel-button:hover {
   background: #edf2f7;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .edituser-goback-button {
@@ -173,11 +264,13 @@
   margin-top: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .edituser-goback-button:hover {
   background: #edf2f7;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 @media (max-width: 640px) {
@@ -193,5 +286,17 @@
   .edituser-filter-select,
   .edituser-filter-input {
     padding: 0.7rem 0.9rem;
+  }
+  
+  .edituser-user-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .edituser-action-buttons {
+    flex-direction: column;
+  }
+  
+  .edituser-assignment-group {
+    padding: 1rem;
   }
 }

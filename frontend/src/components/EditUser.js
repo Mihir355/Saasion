@@ -49,7 +49,7 @@ const EditUser = () => {
       setEditedData({
         name: user.name,
         role: user.role,
-        teachingAssignments: user.teachingAssignments || [],
+        teachingAssignments: [...user.teachingAssignments],
       });
     } else {
       setEditedData({
@@ -237,7 +237,7 @@ const EditUser = () => {
             />
           </div>
 
-          {editedData.role === "student" && (
+          {editedData.role === "student" ? (
             <>
               <div className="edituser-form-group">
                 <label className="edituser-label">Class:</label>
@@ -266,46 +266,73 @@ const EditUser = () => {
                 </select>
               </div>
             </>
-          )}
-
-          {editedData.role === "teacher" && (
-            <>
-              <h4>Teaching Assignments:</h4>
+          ) : (
+            <div className="edituser-assignments">
+              <h4 className="edituser-assignments-title">
+                Teaching Assignments
+              </h4>
               {editedData.teachingAssignments.map((assignment, index) => (
-                <div key={index} className="edituser-form-group">
-                  <input
-                    type="text"
-                    placeholder="Class"
-                    value={assignment.classInfo}
-                    onChange={(e) =>
-                      handleAssignmentChange(index, "classInfo", e.target.value)
-                    }
-                  />
-                  <select
-                    value={assignment.subject}
-                    onChange={(e) =>
-                      handleAssignmentChange(index, "subject", e.target.value)
-                    }
-                  >
-                    <option value="">Select subject</option>
-                    {SUBJECT_OPTIONS.map((subj) => (
-                      <option key={subj} value={subj}>
-                        {subj}
-                      </option>
-                    ))}
-                  </select>
-                  <button onClick={() => removeAssignment(index)}>
-                    Remove
-                  </button>
+                <div key={index} className="edituser-assignment-group">
+                  <div className="edituser-form-group">
+                    <label className="edituser-label">Subject:</label>
+                    <select
+                      className="edituser-select"
+                      value={assignment.subject}
+                      onChange={(e) =>
+                        handleAssignmentChange(index, "subject", e.target.value)
+                      }
+                    >
+                      <option value="">Select subject</option>
+                      {SUBJECT_OPTIONS.map((subj) => (
+                        <option key={subj} value={subj}>
+                          {subj}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="edituser-form-group">
+                    <label className="edituser-label">Class:</label>
+                    <input
+                      type="text"
+                      className="edituser-input"
+                      placeholder="Class"
+                      value={assignment.classInfo}
+                      onChange={(e) =>
+                        handleAssignmentChange(
+                          index,
+                          "classInfo",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  {editedData.teachingAssignments.length > 1 && (
+                    <button
+                      type="button"
+                      className="edituser-remove-button"
+                      onClick={() => removeAssignment(index)}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               ))}
-              <button onClick={addAssignment}>Add Assignment</button>
-            </>
+
+              <button
+                type="button"
+                className="edituser-add-button"
+                onClick={addAssignment}
+              >
+                + Add Another Assignment
+              </button>
+            </div>
           )}
 
           <div className="edituser-action-buttons">
             <button className="edituser-save-button" onClick={handleSave}>
-              Save
+              Save Changes
             </button>
             <button
               className="edituser-cancel-button"
@@ -318,7 +345,7 @@ const EditUser = () => {
       )}
 
       <button className="edituser-goback-button" onClick={() => navigate("/")}>
-        Go Back
+        Go Back to Dashboard
       </button>
     </div>
   );
