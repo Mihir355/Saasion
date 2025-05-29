@@ -18,23 +18,26 @@ const TableView = () => {
         let endpoint = "";
         switch (selectedType) {
           case "teacher":
-            endpoint = "/api/users/table/teachers";
+            endpoint =
+              "https://saasion-backend.onrender.com/api/users/table/teachers";
             break;
           case "student":
-            endpoint = "/api/users/table/students";
+            endpoint =
+              "https://saasion-backend.onrender.com/api/users/table/students";
             break;
           case "subject":
-            endpoint = "/api/users/table/subjects";
+            endpoint =
+              "https://saasion-backend.onrender.com/api/users/table/subjects";
             break;
           default:
-            endpoint = "/api/users/table/teachers";
+            endpoint =
+              "https://saasion-backend.onrender.com/api/users/table/teachers";
         }
 
         const response = await axios.get(endpoint);
 
         // Ensure we always get an array
         const responseData = Array.isArray(response.data) ? response.data : [];
-        console.log(response.data);
         setData(responseData);
       } catch (error) {
         console.error("Error fetching data:", error);
