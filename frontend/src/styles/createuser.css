@@ -1,5 +1,5 @@
 .createuser-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #ffffff;
@@ -85,6 +85,62 @@
   transform: translateY(-1px);
 }
 
+.createuser-assignments {
+  margin-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+}
+
+.createuser-subtitle {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.createuser-assignment-group {
+  position: relative;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.createuser-add-button {
+  padding: 0.7rem 1rem;
+  background-color: #edf2f7;
+  color: #2c3e50;
+  border: 1px dashed #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.createuser-add-button:hover {
+  background-color: #e2e8f0;
+}
+
+.createuser-remove-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.createuser-remove-button:hover {
+  background-color: #fed7d7;
+}
+
 @media (max-width: 640px) {
   .createuser-container {
     margin: 1rem;
@@ -98,5 +154,9 @@
   .createuser-input,
   .createuser-select {
     padding: 0.7rem 0.9rem;
+  }
+  
+  .createuser-assignment-group {
+    padding: 1rem;
   }
 }

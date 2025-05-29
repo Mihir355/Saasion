@@ -3,6 +3,18 @@ const { Schema } = mongoose;
 
 const allowedSubjects = ["english", "math", "science", "hindi"];
 
+const teachingAssignmentSchema = new Schema({
+  classInfo: {
+    type: String,
+    required: true,
+  },
+  subject: {
+    type: String,
+    enum: allowedSubjects,
+    required: true,
+  },
+});
+
 const userSchema = new Schema(
   {
     name: {
@@ -15,14 +27,32 @@ const userSchema = new Schema(
       enum: ["student", "teacher"],
       required: true,
     },
+    // For students only
     classInfo: {
       type: String,
-      required: true,
+      required: function () {
+        return this.role === "student";
+      },
     },
     subject: {
       type: String,
       enum: allowedSubjects,
-      required: true,
+      required: function () {
+        return this.role === "student";
+      },
+    },
+    // For teachers only
+    teachingAssignments: {
+      type: [teachingAssignmentSchema],
+      required: function () {
+        return this.role === "teacher";
+      },
+      validate: {
+        validator: function (assignments) {
+          return assignments.length > 0;
+        },
+        message: "Teachers must have at least one teaching assignment",
+      },
     },
     assignedStudents: [
       {
