@@ -157,12 +157,12 @@ const TableView = () => {
               <tbody>
                 <tr>
                   <td>
-                    {group.students.map((student, idx) => (
+                    {(group.students || []).map((student, idx) => (
                       <div key={idx}>{student}</div>
                     ))}
                   </td>
                   <td>
-                    {[...(group.teachers || [])].map((teacher, idx) => (
+                    {(group.teachers || []).map((teacher, idx) => (
                       <div key={idx}>{teacher}</div>
                     ))}
                   </td>

@@ -258,8 +258,10 @@ router.get("/table/subjects", async (req, res) => {
 
     // Convert to array of groups and normalize Set to array
     const result = Object.values(groups).map((group) => ({
-      ...group,
-      teachers: Array.from(group.teachers),
+      subject: group.subject,
+      classInfo: group.classInfo,
+      students: group.students || [],
+      teachers: Array.from(group.teachers || []),
     }));
 
     res.json(result);
