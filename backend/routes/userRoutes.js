@@ -256,10 +256,13 @@ router.get("/table/subjects", async (req, res) => {
       });
     });
 
-    // Convert to array of groups
-    const result = Object.values(groups);
+    // Convert to array of groups and normalize Set to array
+    const result = Object.values(groups).map((group) => ({
+      ...group,
+      teachers: Array.from(group.teachers),
+    }));
 
-    res.json(result); // Send as array
+    res.json(result);
   } catch (err) {
     console.error("Error fetching subject data:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
