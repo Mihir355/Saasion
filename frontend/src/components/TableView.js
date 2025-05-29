@@ -7,6 +7,7 @@ const TableView = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filterText, setFilterText] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,9 +88,28 @@ const TableView = () => {
     }
   };
 
+  const getFilteredData = () => {
+    if (!filterText.trim()) return data;
+
+    const lower = filterText.toLowerCase();
+
+    const startsWith = data.filter((item) =>
+      item.name?.toLowerCase().startsWith(lower)
+    );
+    const rest = data.filter(
+      (item) =>
+        item.name?.toLowerCase().includes(lower) &&
+        !item.name?.toLowerCase().startsWith(lower)
+    );
+
+    return [...startsWith, ...rest];
+  };
+
   const renderTable = () => {
     if (loading) return <div className="loading">Loading data...</div>;
     if (error) return <div className="error">{error}</div>;
+
+    const filteredData = getFilteredData();
 
     if (selectedType === "teacher") {
       return (
@@ -103,8 +123,8 @@ const TableView = () => {
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
-              data.map((teacher) => (
+            {filteredData.length > 0 ? (
+              filteredData.map((teacher) => (
                 <tr key={teacher._id}>
                   <td>{teacher.name}</td>
                   <td>
@@ -168,8 +188,8 @@ const TableView = () => {
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
-              data.map((student) => (
+            {filteredData.length > 0 ? (
+              filteredData.map((student) => (
                 <tr key={student._id}>
                   <td>{student.name}</td>
                   <td>{student.subject}</td>
@@ -256,6 +276,21 @@ const TableView = () => {
           <option value="student">Student View</option>
           <option value="subject">Subject View</option>
         </select>
+
+        {(selectedType === "teacher" || selectedType === "student") && (
+          <input
+            type="text"
+            placeholder={`Filter by ${selectedType} name...`}
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "6px",
+              border: "2px solid #e2e8f0",
+              flex: "1",
+            }}
+          />
+        )}
       </div>
 
       <div className="table-wrapper">{renderTable()}</div>
