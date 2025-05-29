@@ -61,36 +61,37 @@ router.get("/", async (req, res) => {
       if (subject && subject.trim() !== "") {
         filter["teachingAssignments.subject"] = subject.trim();
       }
+
+      const teachers = await User.find(filter).populate({
+        path: "assignedStudents",
+        select: "name classInfo subject",
+      });
+
+      const result = teachers.map((teacher) => ({
+        ...teacher.toObject(),
+        assignedStudentsCount: teacher.assignedStudents.length,
+      }));
+
+      return res.json(result);
     }
     // For students - filter by their class and subject
-    else {
+    else if (role === "student") {
       if (classInfo && classInfo.trim() !== "") {
         filter.classInfo = classInfo.trim();
       }
       if (subject && subject.trim() !== "") {
         filter.subject = subject.trim();
       }
-    }
 
-    if (filter.role === "teacher") {
-      const teachers = await User.find(filter).populate({
-        path: "assignedStudents",
-        select: "name classInfo subject",
+      const students = await User.find(filter).populate({
+        path: "assignedTeacher",
+        select: "name",
       });
 
-      const result = teachers.map((teacher) => {
-        // Calculate total assigned students
-        const assignedStudentsCount = teacher.assignedStudents.length;
-
-        return {
-          ...teacher.toObject(),
-          assignedStudentsCount,
-        };
-      });
-
-      return res.json(result);
+      return res.json(students);
     }
 
+    // Handle other roles or no role specified
     const users = await User.find(filter);
     res.json(users);
   } catch (err) {
@@ -164,7 +165,7 @@ router.post("/assign", async (req, res) => {
       return res.status(400).json({ message: "Invalid roles for assignment" });
     }
 
-    // ✅ Check if teacher has valid teaching assignments
+    // Check if teacher has valid teaching assignments
     if (
       !Array.isArray(teacher.teachingAssignments) ||
       teacher.teachingAssignments.length === 0
@@ -174,7 +175,7 @@ router.post("/assign", async (req, res) => {
       });
     }
 
-    // ✅ Ensure the teacher can teach the student's subject and class
+    // Ensure the teacher can teach the student's subject and class
     const canTeach = teacher.teachingAssignments.some(
       (assignment) =>
         assignment.subject === student.subject &&
@@ -188,7 +189,7 @@ router.post("/assign", async (req, res) => {
       });
     }
 
-    // ✅ Avoid reassigning to the same teacher
+    // Avoid reassigning to the same teacher
     const alreadyAssigned = student.assignedTeacher?.toString() === teacherId;
     if (alreadyAssigned) {
       return res
@@ -196,30 +197,25 @@ router.post("/assign", async (req, res) => {
         .json({ message: "Student is already assigned to this teacher" });
     }
 
-    // ✅ Unassign from old teacher if exists
+    // Unassign from old teacher if exists
     if (student.assignedTeacher) {
-      await User.findByIdAndUpdate(student.assignedTeacher, {
-        $pull: { assignedStudents: student._id },
-      });
+      const oldTeacher = await User.findById(student.assignedTeacher);
+      if (oldTeacher) {
+        oldTeacher.assignedStudents = oldTeacher.assignedStudents.filter(
+          (id) => id.toString() !== studentId
+        );
+        await oldTeacher.save();
+      }
     }
 
-    // ✅ Assign student to teacher
+    // Assign student to teacher
     student.assignedTeacher = teacher._id;
     await student.save();
 
-    // ✅ Prevent invalid save by checking teacher.teachingAssignments again
-    if (
-      Array.isArray(teacher.teachingAssignments) &&
-      teacher.teachingAssignments.length > 0
-    ) {
-      if (!teacher.assignedStudents.includes(student._id)) {
-        teacher.assignedStudents.push(student._id);
-        await teacher.save();
-      }
-    } else {
-      console.warn(
-        "Teacher missing teaching assignments, skipping teacher.save() to avoid validation error."
-      );
+    // Add student to teacher's assignedStudents
+    if (!teacher.assignedStudents.includes(student._id)) {
+      teacher.assignedStudents.push(student._id);
+      await teacher.save();
     }
 
     res.json({

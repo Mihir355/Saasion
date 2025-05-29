@@ -1,0 +1,109 @@
+.table-view-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.table-view-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+label {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.subject-group {
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f8fafc;
+}
+
+.subject-group h3 {
+  margin-top: 0;
+  color: #2968c8;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Add to tableview.css */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #4a5568;
+}
+
+.controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.assignment-item {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #2968c8;
+}
+
+.student-item {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  border-left: 3px solid #38a169;
+}
+
+.subject-group {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.subject-group h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
