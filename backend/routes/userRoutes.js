@@ -231,6 +231,7 @@ router.get("/table/students", async (req, res) => {
   }
 });
 
+// Update the /table/subjects endpoint
 router.get("/table/subjects", async (req, res) => {
   try {
     const teachers = await User.find({ role: "teacher" }).populate({
@@ -255,12 +256,10 @@ router.get("/table/subjects", async (req, res) => {
       });
     });
 
-    const result = Object.values(groups).map((group) => ({
-      ...group,
-      teachers: [...group.teachers],
-    }));
+    // Convert to array of groups
+    const result = Object.values(groups);
 
-    res.json(result);
+    res.json(result); // Send as array
   } catch (err) {
     console.error("Error fetching subject data:", err);
     res.status(500).json({ message: "Server Error", error: err.message });

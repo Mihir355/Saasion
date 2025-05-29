@@ -12,6 +12,8 @@ const TableView = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setData([]); // Reset data before new fetch
+
       try {
         let endpoint = "";
         switch (selectedType) {
@@ -29,7 +31,11 @@ const TableView = () => {
         }
 
         const response = await axios.get(endpoint);
-        setData(response.data);
+
+        // Ensure we always get an array
+        const responseData = Array.isArray(response.data) ? response.data : [];
+
+        setData(responseData);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load data. Please try again later.");
@@ -153,7 +159,7 @@ const TableView = () => {
                     ))}
                   </td>
                   <td>
-                    {group.teachers.map((teacher, idx) => (
+                    {[...(group.teachers || [])].map((teacher, idx) => (
                       <div key={idx}>{teacher}</div>
                     ))}
                   </td>
