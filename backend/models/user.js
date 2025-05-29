@@ -49,11 +49,14 @@ const userSchema = new Schema(
       },
       validate: {
         validator: function (assignments) {
-          return assignments.length > 0;
+          // Skip validation for non-teachers
+          if (this.role !== "teacher") return true;
+          return Array.isArray(assignments) && assignments.length > 0;
         },
         message: "Teachers must have at least one teaching assignment",
       },
     },
+
     assignedStudents: [
       {
         type: Schema.Types.ObjectId,
