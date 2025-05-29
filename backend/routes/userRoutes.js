@@ -59,14 +59,6 @@ router.get("/", async (req, res) => {
       if (subject && subject.trim() !== "") {
         filter["teachingAssignments.subject"] = subject.trim();
       }
-
-      const teachers = await User.find(filter).populate({
-        path: "assignedStudents",
-        select: "name classInfo subject",
-      });
-
-      // Return raw teacher objects without extra mapping
-      return res.json(teachers);
     } else if (role === "student") {
       if (classInfo && classInfo.trim() !== "") {
         filter.classInfo = classInfo.trim();
@@ -74,13 +66,6 @@ router.get("/", async (req, res) => {
       if (subject && subject.trim() !== "") {
         filter.subject = subject.trim();
       }
-
-      const students = await User.find(filter).populate({
-        path: "assignedTeacher",
-        select: "name",
-      });
-
-      return res.json(students);
     }
 
     const users = await User.find(filter);
@@ -216,6 +201,68 @@ router.post("/assign", async (req, res) => {
     });
   } catch (err) {
     console.error("Error assigning student:", err);
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+router.get("/table/teachers", async (req, res) => {
+  try {
+    const teachers = await User.find({ role: "teacher" }).populate({
+      path: "assignedStudents",
+      select: "name classInfo subject",
+    });
+    res.json(teachers);
+  } catch (err) {
+    console.error("Error fetching teachers:", err);
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+router.get("/table/students", async (req, res) => {
+  try {
+    const students = await User.find({ role: "student" }).populate({
+      path: "assignedTeacher",
+      select: "name",
+    });
+    res.json(students);
+  } catch (err) {
+    console.error("Error fetching students:", err);
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+router.get("/table/subjects", async (req, res) => {
+  try {
+    const teachers = await User.find({ role: "teacher" }).populate({
+      path: "assignedStudents",
+      select: "name classInfo subject",
+    });
+
+    const groups = {};
+    teachers.forEach((teacher) => {
+      teacher.assignedStudents?.forEach((student) => {
+        const key = `${student.subject}-${student.classInfo}`;
+        if (!groups[key]) {
+          groups[key] = {
+            subject: student.subject,
+            classInfo: student.classInfo,
+            students: [],
+            teachers: new Set(),
+          };
+        }
+        groups[key].students.push(student.name);
+        groups[key].teachers.add(teacher.name);
+      });
+    });
+
+    const result = Object.values(groups).map((group) => ({
+      ...group,
+      teachers: [...group.teachers],
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("Error fetching subject data:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });

@@ -13,13 +13,23 @@ const TableView = () => {
       setLoading(true);
       setError(null);
       try {
-        const apiRole = selectedType === "subject" ? "teacher" : selectedType;
-        const response = await axios.get(`/api/users?role=${apiRole}`);
+        let endpoint = "";
+        switch (selectedType) {
+          case "teacher":
+            endpoint = "/api/users/table/teachers";
+            break;
+          case "student":
+            endpoint = "/api/users/table/students";
+            break;
+          case "subject":
+            endpoint = "/api/users/table/subjects";
+            break;
+          default:
+            endpoint = "/api/users/table/teachers";
+        }
 
-        // Ensure data is always an array
-        const responseData = Array.isArray(response.data) ? response.data : [];
-
-        setData(responseData);
+        const response = await axios.get(endpoint);
+        setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load data. Please try again later.");
@@ -122,29 +132,8 @@ const TableView = () => {
     }
 
     if (selectedType === "subject") {
-      // Create subject-class groups
-      const groups = {};
-
-      data.forEach((teacher) => {
-        teacher.assignedStudents?.forEach((student) => {
-          const key = `${student.subject}-${student.classInfo}`;
-          if (!groups[key]) {
-            groups[key] = {
-              subject: student.subject,
-              classInfo: student.classInfo,
-              students: [],
-              teachers: new Set(),
-            };
-          }
-          groups[key].students.push(student.name);
-          groups[key].teachers.add(teacher.name);
-        });
-      });
-
-      const groupEntries = Object.values(groups);
-
-      return groupEntries.length > 0 ? (
-        groupEntries.map((group, index) => (
+      return data.length > 0 ? (
+        data.map((group, index) => (
           <div key={index} className="subject-group">
             <h3>
               {group.subject} - Class {group.classInfo}
@@ -164,7 +153,7 @@ const TableView = () => {
                     ))}
                   </td>
                   <td>
-                    {[...group.teachers].map((teacher, idx) => (
+                    {group.teachers.map((teacher, idx) => (
                       <div key={idx}>{teacher}</div>
                     ))}
                   </td>
