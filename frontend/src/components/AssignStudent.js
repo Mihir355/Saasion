@@ -163,7 +163,10 @@ const AssignStudent = () => {
               <option value="">Select Teacher</option>
               {teachers.map((teacher) => (
                 <option key={teacher._id} value={teacher._id}>
-                  {teacher.name} ({teacher.classInfo}) - {teacher.subject}
+                  {teacher.name} -{" "}
+                  {teacher.teachingAssignments
+                    .map((ta) => `${ta.classInfo}/${ta.subject}`)
+                    .join(", ")}
                 </option>
               ))}
             </select>

@@ -164,6 +164,18 @@ router.post("/assign", async (req, res) => {
       return res.status(400).json({ message: "Invalid roles for assignment" });
     }
 
+    const canTeach = teacher.teachingAssignments.some(
+      (ta) =>
+        ta.subject === student.subject && ta.classInfo === student.classInfo
+    );
+
+    if (!canTeach) {
+      return res.status(400).json({
+        message:
+          "This teacher is not assigned to teach the student's subject and class",
+      });
+    }
+
     const alreadyAssigned = student.assignedTeacher?.toString() === teacherId;
     if (alreadyAssigned) {
       return res
