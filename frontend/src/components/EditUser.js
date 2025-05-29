@@ -45,12 +45,20 @@ const EditUser = () => {
 
   const selectUser = (user) => {
     setSelectedUser(user);
-    setEditedData({
-      name: user.name,
-      role: user.role,
-      classInfo: user.classInfo,
-      subjects: user.subject || "",
-    });
+    if (user.role === "teacher") {
+      setEditedData({
+        name: user.name,
+        role: user.role,
+        teachingAssignments: user.teachingAssignments || [],
+      });
+    } else {
+      setEditedData({
+        name: user.name,
+        role: user.role,
+        classInfo: user.classInfo,
+        subject: user.subject,
+      });
+    }
   };
 
   const handleEditChange = (e) => {
@@ -58,10 +66,31 @@ const EditUser = () => {
     setEditedData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubjectChange = (e) => {
+  const handleAssignmentChange = (index, field, value) => {
+    const newAssignments = [...editedData.teachingAssignments];
+    newAssignments[index][field] = value;
     setEditedData((prev) => ({
       ...prev,
-      subject: e.target.value,
+      teachingAssignments: newAssignments,
+    }));
+  };
+
+  const addAssignment = () => {
+    setEditedData((prev) => ({
+      ...prev,
+      teachingAssignments: [
+        ...(prev.teachingAssignments || []),
+        { subject: "", classInfo: "" },
+      ],
+    }));
+  };
+
+  const removeAssignment = (index) => {
+    const newAssignments = [...editedData.teachingAssignments];
+    newAssignments.splice(index, 1);
+    setEditedData((prev) => ({
+      ...prev,
+      teachingAssignments: newAssignments,
     }));
   };
 
@@ -70,13 +99,29 @@ const EditUser = () => {
       alert("Name is required.");
       return;
     }
-    if (!editedData.classInfo.trim()) {
-      alert("Class information is required.");
-      return;
+
+    if (editedData.role === "student") {
+      if (!editedData.classInfo.trim()) {
+        alert("Class information is required.");
+        return;
+      }
+      if (!editedData.subject.trim()) {
+        alert("Please select a subject.");
+        return;
+      }
     }
-    if (!editedData.subject.trim()) {
-      alert("Please select a subject.");
-      return;
+
+    if (editedData.role === "teacher") {
+      if (
+        !editedData.teachingAssignments ||
+        editedData.teachingAssignments.length === 0 ||
+        editedData.teachingAssignments.some(
+          (ta) => !ta.subject || !ta.classInfo
+        )
+      ) {
+        alert("All teaching assignments must have subject and class.");
+        return;
+      }
     }
 
     try {
@@ -192,34 +237,71 @@ const EditUser = () => {
             />
           </div>
 
-          <div className="edituser-form-group">
-            <label className="edituser-label">Class:</label>
-            <input
-              type="text"
-              className="edituser-input"
-              name="classInfo"
-              value={editedData.classInfo}
-              onChange={handleEditChange}
-            />
-          </div>
+          {editedData.role === "student" && (
+            <>
+              <div className="edituser-form-group">
+                <label className="edituser-label">Class:</label>
+                <input
+                  type="text"
+                  className="edituser-input"
+                  name="classInfo"
+                  value={editedData.classInfo}
+                  onChange={handleEditChange}
+                />
+              </div>
+              <div className="edituser-form-group">
+                <label className="edituser-label">Subject:</label>
+                <select
+                  className="edituser-select"
+                  name="subject"
+                  value={editedData.subject}
+                  onChange={handleEditChange}
+                >
+                  <option value="">Select a subject</option>
+                  {SUBJECT_OPTIONS.map((subj) => (
+                    <option key={subj} value={subj}>
+                      {subj}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
 
-          <div className="edituser-form-group">
-            <label className="edituser-label">Subject:</label>
-            <select
-              className="edituser-select"
-              value={editedData.subject || ""}
-              onChange={handleSubjectChange}
-            >
-              <option value="" disabled>
-                Select a subject
-              </option>
-              {SUBJECT_OPTIONS.map((subj) => (
-                <option key={subj} value={subj}>
-                  {subj}
-                </option>
+          {editedData.role === "teacher" && (
+            <>
+              <h4>Teaching Assignments:</h4>
+              {editedData.teachingAssignments.map((assignment, index) => (
+                <div key={index} className="edituser-form-group">
+                  <input
+                    type="text"
+                    placeholder="Class"
+                    value={assignment.classInfo}
+                    onChange={(e) =>
+                      handleAssignmentChange(index, "classInfo", e.target.value)
+                    }
+                  />
+                  <select
+                    value={assignment.subject}
+                    onChange={(e) =>
+                      handleAssignmentChange(index, "subject", e.target.value)
+                    }
+                  >
+                    <option value="">Select subject</option>
+                    {SUBJECT_OPTIONS.map((subj) => (
+                      <option key={subj} value={subj}>
+                        {subj}
+                      </option>
+                    ))}
+                  </select>
+                  <button onClick={() => removeAssignment(index)}>
+                    Remove
+                  </button>
+                </div>
               ))}
-            </select>
-          </div>
+              <button onClick={addAssignment}>Add Assignment</button>
+            </>
+          )}
 
           <div className="edituser-action-buttons">
             <button className="edituser-save-button" onClick={handleSave}>

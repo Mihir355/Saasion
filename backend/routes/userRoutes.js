@@ -50,23 +50,18 @@ router.get("/", async (req, res) => {
     const { role, classInfo, subject } = req.query;
 
     const filter = {};
-    if (role && role.trim() !== "") filter.role = role.trim();
-    if (classInfo && classInfo.trim() !== "")
-      filter.classInfo = classInfo.trim();
-    if (subject && subject.trim() !== "") filter.subject = subject.trim();
 
-    if (filter.role === "teacher") {
-      const teachers = await User.find(filter).populate({
-        path: "assignedStudents",
-        select: "name classInfo subject",
-      });
+    if (role) filter.role = role;
 
-      const result = teachers.map((teacher) => ({
-        ...teacher.toObject(),
-        assignedStudentsCount: teacher.assignedStudents.length,
-      }));
+    if (role === "teacher" && (subject || classInfo)) {
+      filter.teachingAssignments = {};
+      if (subject) filter["teachingAssignments.subject"] = subject;
+      if (classInfo) filter["teachingAssignments.classInfo"] = classInfo;
+    }
 
-      return res.json(result);
+    if (role !== "teacher") {
+      if (classInfo) filter.classInfo = classInfo;
+      if (subject) filter.subject = subject;
     }
 
     const users = await User.find(filter);
@@ -82,50 +77,39 @@ router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const existingUser = await User.findById(id);
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!existingUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const isStudent = user.role === "student";
+    const isTeacher = user.role === "teacher";
 
-    const subjectChanged =
-      updateData.subject && updateData.subject !== existingUser.subject;
-
-    const classChanged =
-      updateData.classInfo && updateData.classInfo !== existingUser.classInfo;
-
-    if (subjectChanged || classChanged) {
-      if (existingUser.role === "teacher") {
-        await User.updateMany(
-          { _id: { $in: existingUser.assignedStudents } },
-          { $unset: { assignedTeacher: "" } }
-        );
-
-        existingUser.assignedStudents = [];
-      }
-
-      if (existingUser.role === "student" && existingUser.assignedTeacher) {
-        const oldTeacher = await User.findById(existingUser.assignedTeacher);
-
-        const teacherClassMatch =
-          oldTeacher && oldTeacher.classInfo === existingUser.classInfo;
-        const teacherSubjectMatch =
-          oldTeacher && oldTeacher.subject === existingUser.subject;
-
-        if (!teacherClassMatch || !teacherSubjectMatch) {
-          await User.findByIdAndUpdate(existingUser.assignedTeacher, {
-            $pull: { assignedStudents: existingUser._id },
-          });
-
-          existingUser.assignedTeacher = undefined;
-        }
+    // If student and subject/class changed, unassign from old teacher
+    if (
+      isStudent &&
+      (updateData.subject !== user.subject ||
+        updateData.classInfo !== user.classInfo)
+    ) {
+      if (user.assignedTeacher) {
+        await User.findByIdAndUpdate(user.assignedTeacher, {
+          $pull: { assignedStudents: user._id },
+        });
+        user.assignedTeacher = undefined;
       }
     }
 
-    Object.assign(existingUser, updateData);
-    await existingUser.save();
+    // If teacher and assignments changed, clear assigned students
+    if (isTeacher && updateData.teachingAssignments) {
+      await User.updateMany(
+        { _id: { $in: user.assignedStudents } },
+        { $unset: { assignedTeacher: "" } }
+      );
+      user.assignedStudents = [];
+    }
 
-    res.json({ message: "User updated successfully", user: existingUser });
+    Object.assign(user, updateData);
+    await user.save();
+
+    res.json({ message: "User updated successfully", user });
   } catch (err) {
     console.error("Error updating user:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
