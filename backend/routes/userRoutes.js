@@ -4,24 +4,43 @@ const User = require("../models/user");
 
 router.post("/", async (req, res) => {
   try {
-    const { name, role, subject, classInfo } = req.body;
+    const { name, role, subject, classInfo, teachingAssignments } = req.body;
 
-    if (!name || !role || !subject || !classInfo) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!name || !role) {
+      return res.status(400).json({ message: "Name and role are required" });
     }
 
-    const user = new User({
-      name,
-      role,
-      classInfo,
-      subject,
-    });
+    let userData = { name, role };
 
+    if (role === "student") {
+      if (!subject || !classInfo) {
+        return res.status(400).json({
+          message: "Subject and classInfo are required for students",
+        });
+      }
+      userData.subject = subject;
+      userData.classInfo = classInfo;
+    } else if (role === "teacher") {
+      if (
+        !Array.isArray(teachingAssignments) ||
+        teachingAssignments.length === 0 ||
+        teachingAssignments.some((ta) => !ta.subject || !ta.classInfo)
+      ) {
+        return res.status(400).json({
+          message:
+            "At least one valid teaching assignment (subject and classInfo) is required for teachers",
+        });
+      }
+
+      userData.teachingAssignments = teachingAssignments;
+    }
+
+    const user = new User(userData);
     await user.save();
 
     res.status(201).json({ message: "User created successfully", user });
   } catch (err) {
-    console.error(err);
+    console.error("Error creating user:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
