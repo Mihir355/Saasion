@@ -6,16 +6,23 @@ const TableView = () => {
   const [selectedType, setSelectedType] = useState("teacher");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const apiRole = selectedType === "subject" ? "teacher" : selectedType;
         const response = await axios.get(`/api/users?role=${apiRole}`);
-        setData(response.data);
+
+        // Ensure data is always an array
+        const responseData = Array.isArray(response.data) ? response.data : [];
+
+        setData(responseData);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to load data. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -29,6 +36,10 @@ const TableView = () => {
       return <div className="loading">Loading data...</div>;
     }
 
+    if (error) {
+      return <div className="error">{error}</div>;
+    }
+
     if (selectedType === "teacher") {
       return (
         <table>
@@ -40,29 +51,38 @@ const TableView = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((teacher) => (
-              <tr key={teacher._id}>
-                <td>{teacher.name}</td>
-                <td>
-                  {teacher.teachingAssignments?.map((ta, index) => (
-                    <div key={index} className="assignment-item">
-                      <strong>Class:</strong> {ta.classInfo} <br />
-                      <strong>Subject:</strong> {ta.subject}
-                    </div>
-                  )) || "None"}
-                </td>
-                <td>
-                  {teacher.assignedStudents?.map((student) => (
-                    <div key={student._id} className="student-item">
-                      {student.name} <br />
-                      <small>
-                        (Class: {student.classInfo}, Subject: {student.subject})
-                      </small>
-                    </div>
-                  )) || "None"}
+            {data.length > 0 ? (
+              data.map((teacher) => (
+                <tr key={teacher._id}>
+                  <td>{teacher.name}</td>
+                  <td>
+                    {teacher.teachingAssignments?.map((ta, index) => (
+                      <div key={index} className="assignment-item">
+                        <strong>Class:</strong> {ta.classInfo} <br />
+                        <strong>Subject:</strong> {ta.subject}
+                      </div>
+                    )) || "None"}
+                  </td>
+                  <td>
+                    {teacher.assignedStudents?.map((student) => (
+                      <div key={student._id} className="student-item">
+                        {student.name} <br />
+                        <small>
+                          (Class: {student.classInfo}, Subject:{" "}
+                          {student.subject})
+                        </small>
+                      </div>
+                    )) || "None"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="no-data">
+                  No teachers found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       );
@@ -80,14 +100,22 @@ const TableView = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((student) => (
-              <tr key={student._id}>
-                <td>{student.name}</td>
-                <td>{student.subject}</td>
-                <td>{student.classInfo}</td>
-                <td>{student.assignedTeacher?.name || "Not Assigned"}</td>
+            {data.length > 0 ? (
+              data.map((student) => (
+                <tr key={student._id}>
+                  <td>{student.name}</td>
+                  <td>{student.subject}</td>
+                  <td>{student.classInfo}</td>
+                  <td>{student.assignedTeacher?.name || "Not Assigned"}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="no-data">
+                  No students found
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       );
@@ -113,8 +141,10 @@ const TableView = () => {
         });
       });
 
-      return Object.keys(groups).length > 0 ? (
-        Object.values(groups).map((group, index) => (
+      const groupEntries = Object.values(groups);
+
+      return groupEntries.length > 0 ? (
+        groupEntries.map((group, index) => (
           <div key={index} className="subject-group">
             <h3>
               {group.subject} - Class {group.classInfo}
@@ -144,7 +174,7 @@ const TableView = () => {
           </div>
         ))
       ) : (
-        <p>No assignments found</p>
+        <p className="no-data">No subject assignments found</p>
       );
     }
 
