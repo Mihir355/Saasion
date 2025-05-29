@@ -20,15 +20,23 @@ const AssignStudent = () => {
 
   const fetchUsers = async () => {
     try {
-      const params = new URLSearchParams();
-      if (filters.classInfo) params.append("classInfo", filters.classInfo);
-      if (filters.subject) params.append("subject", filters.subject);
+      const studentParams = new URLSearchParams({
+        role: "student",
+        ...(filters.classInfo && { classInfo: filters.classInfo }),
+        ...(filters.subject && { subject: filters.subject }),
+      });
+
+      const teacherParams = new URLSearchParams({
+        role: "teacher",
+        ...(filters.classInfo && { classInfo: filters.classInfo }),
+        ...(filters.subject && { subject: filters.subject }),
+      });
 
       const studentRes = await fetch(
-        `https://saasion-backend.onrender.com/api/users?role=student&${params.toString()}`
+        `https://saasion-backend.onrender.com/api/users?${studentParams.toString()}`
       );
       const teacherRes = await fetch(
-        `https://saasion-backend.onrender.com/api/users?role=teacher&${params.toString()}`
+        `https://saasion-backend.onrender.com/api/users?${teacherParams.toString()}`
       );
 
       const studentData = await studentRes.json();

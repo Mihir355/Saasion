@@ -165,8 +165,9 @@ router.post("/assign", async (req, res) => {
     }
 
     const canTeach = teacher.teachingAssignments.some(
-      (ta) =>
-        ta.subject === student.subject && ta.classInfo === student.classInfo
+      (assignment) =>
+        assignment.subject === student.subject &&
+        assignment.classInfo === student.classInfo
     );
 
     if (!canTeach) {
