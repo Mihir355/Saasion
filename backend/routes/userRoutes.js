@@ -164,6 +164,17 @@ router.post("/assign", async (req, res) => {
       return res.status(400).json({ message: "Invalid roles for assignment" });
     }
 
+    // ✅ Check if teacher has valid teaching assignments
+    if (
+      !Array.isArray(teacher.teachingAssignments) ||
+      teacher.teachingAssignments.length === 0
+    ) {
+      return res.status(400).json({
+        message: "Teacher has no valid teaching assignments.",
+      });
+    }
+
+    // ✅ Ensure the teacher can teach the student's subject and class
     const canTeach = teacher.teachingAssignments.some(
       (assignment) =>
         assignment.subject === student.subject &&
@@ -177,6 +188,7 @@ router.post("/assign", async (req, res) => {
       });
     }
 
+    // ✅ Avoid reassigning to the same teacher
     const alreadyAssigned = student.assignedTeacher?.toString() === teacherId;
     if (alreadyAssigned) {
       return res
@@ -184,18 +196,30 @@ router.post("/assign", async (req, res) => {
         .json({ message: "Student is already assigned to this teacher" });
     }
 
+    // ✅ Unassign from old teacher if exists
     if (student.assignedTeacher) {
       await User.findByIdAndUpdate(student.assignedTeacher, {
         $pull: { assignedStudents: student._id },
       });
     }
 
+    // ✅ Assign student to teacher
     student.assignedTeacher = teacher._id;
     await student.save();
 
-    if (!teacher.assignedStudents.includes(student._id)) {
-      teacher.assignedStudents.push(student._id);
-      await teacher.save();
+    // ✅ Prevent invalid save by checking teacher.teachingAssignments again
+    if (
+      Array.isArray(teacher.teachingAssignments) &&
+      teacher.teachingAssignments.length > 0
+    ) {
+      if (!teacher.assignedStudents.includes(student._id)) {
+        teacher.assignedStudents.push(student._id);
+        await teacher.save();
+      }
+    } else {
+      console.warn(
+        "Teacher missing teaching assignments, skipping teacher.save() to avoid validation error."
+      );
     }
 
     res.json({
