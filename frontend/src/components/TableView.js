@@ -12,7 +12,7 @@ const TableView = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-      setData([]); // Reset data before new fetch
+      setData([]);
 
       try {
         let endpoint = "";
@@ -35,8 +35,6 @@ const TableView = () => {
         }
 
         const response = await axios.get(endpoint);
-
-        // Ensure we always get an array
         const responseData = Array.isArray(response.data) ? response.data : [];
         setData(responseData);
       } catch (error) {
@@ -49,6 +47,45 @@ const TableView = () => {
 
     fetchData();
   }, [selectedType]);
+
+  const handleEdit = async (user) => {
+    const newName = prompt("Enter new name:", user.name);
+    if (!newName || newName.trim() === "" || newName === user.name) return;
+
+    try {
+      await axios.put(
+        `https://saasion-backend.onrender.com/api/users/${user._id}`,
+        { ...user, name: newName }
+      );
+      alert("User updated successfully.");
+      setData((prev) =>
+        prev.map((item) =>
+          item._id === user._id ? { ...item, name: newName } : item
+        )
+      );
+    } catch (err) {
+      alert("Failed to update user.");
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(
+        `https://saasion-backend.onrender.com/api/users/${userId}`
+      );
+      alert("User deleted.");
+      setData((prev) => prev.filter((item) => item._id !== userId));
+    } catch (err) {
+      alert("Failed to delete user.");
+      console.error(err);
+    }
+  };
 
   const renderTable = () => {
     if (loading) {
@@ -67,6 +104,7 @@ const TableView = () => {
               <th>Teacher</th>
               <th>Teaching Assignments</th>
               <th>Assigned Students</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -93,11 +131,17 @@ const TableView = () => {
                       </div>
                     )) || "None"}
                   </td>
+                  <td>
+                    <button onClick={() => handleEdit(teacher)}>Edit</button>
+                    <button onClick={() => handleDelete(teacher._id)}>
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="no-data">
+                <td colSpan="4" className="no-data">
                   No teachers found
                 </td>
               </tr>
@@ -116,6 +160,7 @@ const TableView = () => {
               <th>Subject</th>
               <th>Class</th>
               <th>Assigned Teacher</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -126,11 +171,17 @@ const TableView = () => {
                   <td>{student.subject}</td>
                   <td>{student.classInfo}</td>
                   <td>{student.assignedTeacher?.name || "Not Assigned"}</td>
+                  <td>
+                    <button onClick={() => handleEdit(student)}>Edit</button>
+                    <button onClick={() => handleDelete(student._id)}>
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="no-data">
+                <td colSpan="5" className="no-data">
                   No students found
                 </td>
               </tr>

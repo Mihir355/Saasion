@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 
+// Create a user
 router.post("/", async (req, res) => {
   try {
     const { name, role, subject, classInfo, teachingAssignments } = req.body;
@@ -31,7 +32,6 @@ router.post("/", async (req, res) => {
             "At least one valid teaching assignment (subject and classInfo) is required for teachers",
         });
       }
-
       userData.teachingAssignments = teachingAssignments;
     }
 
@@ -45,27 +45,22 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Get users with optional filters
 router.get("/", async (req, res) => {
   try {
     const { role, classInfo, subject } = req.query;
     const filter = {};
 
-    if (role && role.trim() !== "") filter.role = role.trim();
+    if (role?.trim()) filter.role = role.trim();
 
     if (role === "teacher") {
-      if (classInfo && classInfo.trim() !== "") {
+      if (classInfo?.trim())
         filter["teachingAssignments.classInfo"] = classInfo.trim();
-      }
-      if (subject && subject.trim() !== "") {
+      if (subject?.trim())
         filter["teachingAssignments.subject"] = subject.trim();
-      }
     } else if (role === "student") {
-      if (classInfo && classInfo.trim() !== "") {
-        filter.classInfo = classInfo.trim();
-      }
-      if (subject && subject.trim() !== "") {
-        filter.subject = subject.trim();
-      }
+      if (classInfo?.trim()) filter.classInfo = classInfo.trim();
+      if (subject?.trim()) filter.subject = subject.trim();
     }
 
     const users = await User.find(filter);
@@ -76,6 +71,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Update user
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -87,7 +83,6 @@ router.put("/:id", async (req, res) => {
     const isStudent = user.role === "student";
     const isTeacher = user.role === "teacher";
 
-    // If student and subject/class changed, unassign from old teacher
     if (
       isStudent &&
       (updateData.subject !== user.subject ||
@@ -101,7 +96,6 @@ router.put("/:id", async (req, res) => {
       }
     }
 
-    // If teacher and assignments changed, clear assigned students
     if (isTeacher && updateData.teachingAssignments) {
       await User.updateMany(
         { _id: { $in: user.assignedStudents } },
@@ -120,10 +114,38 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// Delete user
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.role === "student" && user.assignedTeacher) {
+      await User.findByIdAndUpdate(user.assignedTeacher, {
+        $pull: { assignedStudents: id },
+      });
+    }
+
+    if (user.role === "teacher" && user.assignedStudents?.length > 0) {
+      await User.updateMany(
+        { _id: { $in: user.assignedStudents } },
+        { $unset: { assignedTeacher: "" } }
+      );
+    }
+
+    await User.findByIdAndDelete(id);
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+// Assign student to teacher
 router.post("/assign", async (req, res) => {
   try {
     const { studentId, teacherId } = req.body;
-
     if (!studentId || !teacherId) {
       return res
         .status(400)
@@ -132,7 +154,6 @@ router.post("/assign", async (req, res) => {
 
     const student = await User.findById(studentId);
     const teacher = await User.findById(teacherId);
-
     if (!student || !teacher) {
       return res.status(404).json({ message: "Student or teacher not found" });
     }
@@ -141,7 +162,6 @@ router.post("/assign", async (req, res) => {
       return res.status(400).json({ message: "Invalid roles for assignment" });
     }
 
-    // Check if teacher has valid teaching assignments
     if (
       !Array.isArray(teacher.teachingAssignments) ||
       teacher.teachingAssignments.length === 0
@@ -151,13 +171,11 @@ router.post("/assign", async (req, res) => {
       });
     }
 
-    // Ensure the teacher can teach the student's subject and class
     const canTeach = teacher.teachingAssignments.some(
       (assignment) =>
         assignment.subject === student.subject &&
         assignment.classInfo === student.classInfo
     );
-
     if (!canTeach) {
       return res.status(400).json({
         message:
@@ -165,15 +183,12 @@ router.post("/assign", async (req, res) => {
       });
     }
 
-    // Avoid reassigning to the same teacher
-    const alreadyAssigned = student.assignedTeacher?.toString() === teacherId;
-    if (alreadyAssigned) {
+    if (student.assignedTeacher?.toString() === teacherId) {
       return res
         .status(400)
         .json({ message: "Student is already assigned to this teacher" });
     }
 
-    // Unassign from old teacher if exists
     if (student.assignedTeacher) {
       const oldTeacher = await User.findById(student.assignedTeacher);
       if (oldTeacher) {
@@ -184,27 +199,22 @@ router.post("/assign", async (req, res) => {
       }
     }
 
-    // Assign student to teacher
     student.assignedTeacher = teacher._id;
     await student.save();
 
-    // Add student to teacher's assignedStudents
     if (!teacher.assignedStudents.includes(student._id)) {
       teacher.assignedStudents.push(student._id);
       await teacher.save();
     }
 
-    res.json({
-      message: "Student assigned successfully",
-      student,
-      teacher,
-    });
+    res.json({ message: "Student assigned successfully", student, teacher });
   } catch (err) {
     console.error("Error assigning student:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
+// Table: Teachers
 router.get("/table/teachers", async (req, res) => {
   try {
     const teachers = await User.find({ role: "teacher" }).populate({
@@ -218,6 +228,7 @@ router.get("/table/teachers", async (req, res) => {
   }
 });
 
+// Table: Students
 router.get("/table/students", async (req, res) => {
   try {
     const students = await User.find({ role: "student" }).populate({
@@ -231,7 +242,7 @@ router.get("/table/students", async (req, res) => {
   }
 });
 
-// Update the /table/subjects endpoint
+// Table: Subjects
 router.get("/table/subjects", async (req, res) => {
   try {
     const teachers = await User.find({ role: "teacher" }).populate({
@@ -256,12 +267,11 @@ router.get("/table/subjects", async (req, res) => {
       });
     });
 
-    // Convert to array of groups and normalize Set to array
     const result = Object.values(groups).map((group) => ({
       subject: group.subject,
       classInfo: group.classInfo,
-      students: group.students || [],
-      teachers: Array.from(group.teachers || []),
+      students: group.students,
+      teachers: Array.from(group.teachers),
     }));
 
     res.json(result);
